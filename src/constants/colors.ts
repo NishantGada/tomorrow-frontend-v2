@@ -14,12 +14,12 @@ export const Colors = {
 
   // Gradients for that premium feel
   gradients: {
-    primary: ['#6366F1', '#8B5CF6'],      // Indigo to purple
-    red: ['#EF4444', '#F97316'],          // Red to orange
-    yellow: ['#F59E0B', '#EAB308'],       // Amber to yellow
-    green: ['#10B981', '#14B8A6'],        // Emerald to teal
-    dark: ['#0F172A', '#1E293B'],         // Deep dark gradient
-    card: ['#FFFFFF', '#F8FAFC'],         // Subtle card gradient
+    primary: ['#6366F1', '#8B5CF6'] as const,      // Indigo to purple
+    red: ['#EF4444', '#F97316'] as const,          // Red to orange
+    yellow: ['#F59E0B', '#EAB308'] as const,       // Amber to yellow
+    green: ['#10B981', '#14B8A6'] as const,        // Emerald to teal
+    dark: ['#0F172A', '#1E293B'] as const,         // Deep dark gradient
+    card: ['#FFFFFF', '#F8FAFC'] as const,         // Subtle card gradient
   },
 
   // Backgrounds - Modern, deep
