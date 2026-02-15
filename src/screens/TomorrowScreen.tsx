@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
 import { Typography } from '../constants/typography';
@@ -8,10 +8,24 @@ import { mockSummary, mockTasks, mockUser } from '../utils/mockData';
 import StreakCard from '../components/common/StreakCard';
 import { useEffect, useState } from 'react';
 import AISummary from '../components/common/AISummary';
+import { LinearGradient } from 'expo-linear-gradient';
+import AddTaskModal from '../components/tasks/AddTaskModal';
 
 export default function TomorrowScreen() {
   const [tasks, setTasks] = useState(mockTasks);
   const [summary, setSummary] = useState(mockSummary);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+
+  const handleAddTask = (newTask: { title: string; description: string; category: 'RED' | 'YELLOW' | 'GREEN' }) => {
+    const task = {
+      id: Date.now().toString(),
+      ...newTask,
+      status: 'ACTIVE' as const,
+      completed: false,
+    };
+    setTasks([...tasks, task]);
+    setIsAddModalVisible(false);
+  };
 
   // Auto-regenerate summary when tasks change
   useEffect(() => {
@@ -77,6 +91,26 @@ export default function TomorrowScreen() {
           ))}
         </View>
       </ScrollView>
+
+      <Pressable
+        style={styles.fab}
+        onPress={() => setIsAddModalVisible(true)}
+      >
+        <LinearGradient
+          colors={Colors.gradients.primary}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}
+        >
+          <Text style={styles.fabIcon}>+</Text>
+        </LinearGradient>
+      </Pressable>
+
+      <AddTaskModal
+        visible={isAddModalVisible}
+        onClose={() => setIsAddModalVisible(false)}
+        onSave={handleAddTask}
+      />
     </SafeAreaView>
   );
 }
@@ -108,5 +142,26 @@ const styles = StyleSheet.create({
   },
   taskList: {
     marginTop: Spacing.md,
+  },
+
+  // FAB styles
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: Spacing.screenHorizontal,
+    borderRadius: Spacing.radius.full,
+    ...Spacing.shadow.lg,
+  },
+  fabGradient: {
+    width: 60,
+    height: 60,
+    borderRadius: Spacing.radius.full,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fabIcon: {
+    fontSize: 32,
+    color: Colors.text.inverse,
+    fontWeight: '300',
   },
 });
