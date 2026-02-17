@@ -16,9 +16,10 @@ type Props = {
   task: Task;
   onPress?: () => void;
   onDelete?: () => void;
+  onToggleComplete?: () => void;
 };
 
-export default function TaskCard({ task, onPress, onDelete }: Props) {
+export default function TaskCard({ task, onPress, onDelete, onToggleComplete }: Props) {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const getCategoryColor = () => {
@@ -55,7 +56,14 @@ export default function TaskCard({ task, onPress, onDelete }: Props) {
         <View style={styles.content}>
           <View style={styles.header}>
             <View style={styles.leftSection}>
-              <View style={styles.checkbox} />
+              <Pressable onPress={onToggleComplete} hitSlop={8}>
+                <View style={[
+                  styles.checkbox,
+                  task.completed && { backgroundColor: Colors.primary, borderColor: Colors.primary }
+                ]}>
+                  {task.completed && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+              </Pressable>
               <View style={[styles.badge, { backgroundColor: `${getCategoryColor()}15` }]}>
                 <Text style={[styles.badgeText, { color: getCategoryColor() }]}>
                   {getCategoryLabel()}
@@ -73,7 +81,12 @@ export default function TaskCard({ task, onPress, onDelete }: Props) {
             </Pressable>
           </View>
 
-          <Text style={styles.title}>{task.title}</Text>
+          <Text style={[
+            styles.title,
+            task.completed && { textDecorationLine: 'line-through', color: Colors.text.secondary }
+          ]}>
+            {task.title}
+          </Text>
           {task.description && (
             <Text style={styles.description}>{task.description}</Text>
           )}
@@ -163,6 +176,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 2,
     borderColor: Colors.light.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // checkmark
+  checkmark: {
+    color: Colors.text.inverse,
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   badge: {
     paddingHorizontal: Spacing.sm,
@@ -196,7 +217,6 @@ const styles = StyleSheet.create({
     lineHeight: Typography.fontSize.sm * 1.5,
   },
 
-  // Bottom Sheet styles
   // Bottom Sheet styles
   sheetOverlay: {
     flex: 1,

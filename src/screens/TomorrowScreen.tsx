@@ -39,6 +39,14 @@ export default function TomorrowScreen() {
     setEditingTask(null);
   };
 
+  const handleToggleComplete = (taskId: string) => {
+    setTasks(tasks.map(task =>
+      task.id === taskId
+        ? { ...task, completed: !task.completed }
+        : task
+    ));
+  };
+
   // Auto-regenerate summary when tasks change
   useEffect(() => {
     // Simulate summary regeneration
@@ -101,6 +109,7 @@ export default function TomorrowScreen() {
               task={task}
               onPress={() => handleEditTask(task.id)}
               onDelete={() => handleDeleteTask(task.id)}
+              onToggleComplete={() => handleToggleComplete(task.id)}
             />
           ))}
         </View>
