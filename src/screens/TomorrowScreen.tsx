@@ -15,16 +15,28 @@ export default function TomorrowScreen() {
   const [tasks, setTasks] = useState(mockTasks);
   const [summary, setSummary] = useState(mockSummary);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [editingTask, setEditingTask] = useState<typeof mockTasks[0] | null>(null);
 
-  const handleAddTask = (newTask: { title: string; description: string; category: 'RED' | 'YELLOW' | 'GREEN' }) => {
-    const task = {
-      id: Date.now().toString(),
-      ...newTask,
-      status: 'ACTIVE' as const,
-      completed: false,
-    };
-    setTasks([...tasks, task]);
+  const handleAddTask = (taskData: { title: string; description: string; category: 'RED' | 'YELLOW' | 'GREEN' }) => {
+    if (editingTask) {
+      // Edit existing task
+      setTasks(tasks.map(task =>
+        task.id === editingTask.id
+          ? { ...task, ...taskData }
+          : task
+      ));
+    } else {
+      // Add new task
+      const task = {
+        id: Date.now().toString(),
+        ...taskData,
+        status: 'ACTIVE' as const,
+        completed: false,
+      };
+      setTasks([...tasks, task]);
+    }
     setIsAddModalVisible(false);
+    setEditingTask(null);
   };
 
   // Auto-regenerate summary when tasks change
@@ -52,9 +64,11 @@ export default function TomorrowScreen() {
   };
 
   const handleEditTask = (taskId: string) => {
-    // For now, just log - we'll add edit modal later
-    console.log('Edit task:', taskId);
-    Alert.alert('Edit Task', 'Edit modal coming soon!');
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setEditingTask(task);
+      setIsAddModalVisible(true);
+    }
   };
 
   return (
@@ -108,8 +122,12 @@ export default function TomorrowScreen() {
 
       <AddTaskModal
         visible={isAddModalVisible}
-        onClose={() => setIsAddModalVisible(false)}
+        onClose={() => {
+          setIsAddModalVisible(false);
+          setEditingTask(null);
+        }}
         onSave={handleAddTask}
+        editTask={editingTask}
       />
     </SafeAreaView>
   );

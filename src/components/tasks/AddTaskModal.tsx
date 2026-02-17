@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Modal, Pressable, TextInput, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Colors } from '../../constants/colors';
 import { Typography } from '../../constants/typography';
 import { Spacing } from '../../constants/spacing';
@@ -8,12 +8,32 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   onSave: (task: { title: string; description: string; category: 'RED' | 'YELLOW' | 'GREEN' }) => void;
+  editTask?: {
+    id: string;
+    title: string;
+    description: string;
+    category: 'RED' | 'YELLOW' | 'GREEN';
+  } | null;
 };
 
-export default function AddTaskModal({ visible, onClose, onSave }: Props) {
+export default function AddTaskModal({ visible, onClose, onSave, editTask }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<'RED' | 'YELLOW' | 'GREEN'>('YELLOW');
+
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (editTask) {
+      setTitle(editTask.title);
+      setDescription(editTask.description);
+      setCategory(editTask.category);
+    } else {
+      // Reset when opening for new task
+      setTitle('');
+      setDescription('');
+      setCategory('YELLOW');
+    }
+  }, [editTask, visible]);
 
   const handleSave = () => {
     if (!title.trim()) return;
@@ -52,7 +72,7 @@ export default function AddTaskModal({ visible, onClose, onSave }: Props) {
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>New Task</Text>
+            <Text style={styles.title}>{editTask ? 'Edit Task' : 'New Task'}</Text>
             <Pressable onPress={onClose} hitSlop={8}>
               <Text style={styles.closeButton}>✕</Text>
             </Pressable>
@@ -148,12 +168,12 @@ export default function AddTaskModal({ visible, onClose, onSave }: Props) {
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </Pressable>
 
-            <Pressable
+            <Pressable 
               style={[styles.button, styles.saveButton, !title.trim() && styles.saveButtonDisabled]}
               onPress={handleSave}
               disabled={!title.trim()}
             >
-              <Text style={styles.saveButtonText}>Add Task</Text>
+              <Text style={styles.saveButtonText}>{editTask ? 'Save Changes' : 'Add Task'}</Text>
             </Pressable>
           </View>
         </View>
